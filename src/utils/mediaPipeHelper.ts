@@ -90,14 +90,3 @@ export const createPoseLandmarker = async (
   demosSection.classList.remove("invisible");
   return poseLandmarker;
 };
-
-// We really just need the center of the body - the nose
-
-// Reorder result array of bodies, left body first, right body second
-export const sortBodiesByXPosition = (
-  a: NormalizedLandmark[],
-  b: NormalizedLandmark[]
-): number => {
-  // Returns a negative value if a < b, positive if a > b
-  return a[JOINTS.NOSE].x - b[JOINTS.NOSE].x;
-};
