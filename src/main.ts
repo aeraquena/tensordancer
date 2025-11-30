@@ -9,6 +9,7 @@ import {
   ONE_PLAYER_X_POSITIONS,
   TWO_PLAYER_X_POSITIONS,
   BODY_SCALE,
+  DEBUG_MODE,
 } from "./utils/constants";
 import RAPIER from "@dimforge/rapier3d-compat";
 
@@ -641,28 +642,31 @@ const person1Position = new THREE.Mesh(
   new THREE.MeshBasicMaterial({ color: 0x44aeb3 })
 );
 person1Position.position.y = -0.5;
-scene.add(person1Position);
 
 const person2Position = new THREE.Mesh(
   new THREE.PlaneGeometry(0.005, 0.005),
   new THREE.MeshBasicMaterial({ color: 0xf01c9c })
 );
 person2Position.position.y = -0.5;
-scene.add(person2Position);
 
 const ai1Position = new THREE.Mesh(
   new THREE.PlaneGeometry(0.005, 0.005),
   new THREE.MeshBasicMaterial({ color: 0x0000ff })
 );
 ai1Position.position.y = -0.5;
-scene.add(ai1Position);
 
 const ai2Position = new THREE.Mesh(
   new THREE.PlaneGeometry(0.005, 0.005),
   new THREE.MeshBasicMaterial({ color: 0xff0000 })
 );
 ai2Position.position.y = -0.5;
-scene.add(ai2Position);
+
+if (DEBUG_MODE) {
+  scene.add(person1Position);
+  scene.add(person2Position);
+  scene.add(ai1Position);
+  scene.add(ai2Position);
+}
 
 // Metaballs for joints
 const skeletonMetaballs = threeHelper.createSkeletonMetaballs(RAPIER, world);
