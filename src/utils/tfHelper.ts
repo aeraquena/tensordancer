@@ -125,14 +125,6 @@ function convertToTensor(data: PoseDatum[]): NormalizationData {
 export async function run(
   data: PoseDatum[]
 ): Promise<{ model: any; tensorData: NormalizationData } | void> {
-  // Load and plot the original input data that we are going to train on.
-  const values = data.flatMap((d: PoseDatum) =>
-    d.person1Pose.map((p1, i) => ({
-      x: p1,
-      y: d.person2Pose[i],
-    }))
-  );
-
   // Create the model
   const model = createModel();
 

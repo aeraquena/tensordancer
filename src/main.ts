@@ -637,7 +637,8 @@ function animate() {
   skeletonMetaballs.userData.update(
     [...currentPoses, ...aiPoses],
     ballStrength,
-    articulation
+    articulation,
+    numberOfPlayers
   );
   world.step();
 

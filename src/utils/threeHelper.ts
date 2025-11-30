@@ -40,15 +40,20 @@ function addBallWithPositionAndSize(
   yPos: number,
   strength: number,
   bodyIndex: number,
+  numPlayers: number,
   skeletonMetaballs: MarchingCubes
 ) {
-  const scale = 0.5;
   // X positions for each dancer
   // Person 1, Person 2, AI 1, AI 2
-  //const xPositions = [0.6, 0.6, 0.1, 1.1];
+  let xPositions = [0.6, 0.6, 0.1, 1.1];
 
   // For 1 person (stay in one place):
-  const xPositions = [0.6, -0.1, 1.1];
+  // have the extra 4th person in case I forget to change
+  if (numPlayers === 1) {
+    xPositions = [0.6, 0.1, 1.1, 1.1];
+  }
+
+  const scale = 0.5;
 
   // Use FULL 0-1 range, no padding at all
   let newXPos = 1 - xPos + xPositions[bodyIndex];
@@ -70,6 +75,7 @@ function addBallsBetweenJoints(
   numBalls: number,
   strength: number,
   bodyIndex: number,
+  numPlayers: number,
   skeletonMetaballs: MarchingCubes
 ) {
   for (let i = 1; i <= numBalls; i++) {
@@ -78,6 +84,7 @@ function addBallsBetweenJoints(
       joint2.y + (joint1.y - joint2.y) * (i / (numBalls + 1)),
       strength,
       bodyIndex,
+      numPlayers,
       skeletonMetaballs
     );
   }
@@ -135,11 +142,16 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
 
   skeletonMetaballs.userData = {
     // landmarks = currentPoses
-    update(landmarks: any, strength: number, numBallsBetweenJoints: number) {
+    update(
+      landmarks: any,
+      strength: number,
+      numBallsBetweenJoints: number,
+      numPlayers: number
+    ) {
       skeletonMetaballs.reset();
       // loop through all existing rigid bodies, get add a metaball to each
       for (let j = 0; j < landmarks.length; j++) {
-        skeletonBodies.forEach((b, i) => {
+        skeletonBodies.forEach((_, i) => {
           // Skip all head landmarks, foot index, and hands
           if (
             i > 10 &&
@@ -153,6 +165,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
               landmarks[j][i].y,
               strength,
               j,
+              numPlayers,
               skeletonMetaballs
             );
           }
@@ -164,6 +177,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           landmarks[j][JOINTS.NOSE].y,
           8 * strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -183,6 +197,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           numBallsBetweenJoints,
           5 * strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -193,6 +208,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           numBallsBetweenJoints,
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -203,6 +219,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           numBallsBetweenJoints,
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -213,6 +230,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           numBallsBetweenJoints,
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -223,6 +241,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           numBallsBetweenJoints,
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -233,6 +252,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           Math.floor(numBallsBetweenJoints * legMultiplier),
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -243,6 +263,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           Math.floor(numBallsBetweenJoints * legMultiplier),
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -253,6 +274,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           Math.floor(numBallsBetweenJoints * legMultiplier),
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
 
@@ -263,6 +285,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
           Math.floor(numBallsBetweenJoints * legMultiplier),
           strength,
           j,
+          numPlayers,
           skeletonMetaballs
         );
       }

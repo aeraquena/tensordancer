@@ -138,6 +138,7 @@ footer {
 
 .slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 220px;
   height: 64px;
   background: rgb(239, 239, 239);
