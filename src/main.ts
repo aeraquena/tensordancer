@@ -301,6 +301,17 @@ async function predictWebcam() {
           result.landmarks[1]
         ) {
           // 2 person mode
+          // Swap landmarks based on x position
+          if (
+            result.landmarks[0][mediaPipeHelper.JOINTS.NOSE].x <
+            result.landmarks[1][mediaPipeHelper.JOINTS.NOSE].x
+          ) {
+            [result.landmarks[0], result.landmarks[1]] = [
+              result.landmarks[1],
+              result.landmarks[0],
+            ];
+          }
+
           const pose1 = tfHelper.flattenPose(result.landmarks[0]);
           const pose2 = tfHelper.flattenPose(result.landmarks[1]);
 
