@@ -3,6 +3,11 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { JOINTS } from "./mediaPipeHelper";
 import { MarchingCubes } from "three/examples/jsm/objects/MarchingCubes.js";
 import { getJoint } from "./getBody";
+import {
+  ONE_PLAYER_X_POSITIONS,
+  TWO_PLAYER_X_POSITIONS,
+  BODY_SCALE,
+} from "./constants";
 
 const bodyColors: THREE.Color[] = [
   new THREE.Color().setHex(0x44aeb3), // cyan
@@ -45,22 +50,20 @@ function addBallWithPositionAndSize(
 ) {
   // X positions for each dancer
   // Person 1, Person 2, AI 1, AI 2
-  let xPositions = [0.6, 0.6, 0.1, 1.1];
+  let xPositions = TWO_PLAYER_X_POSITIONS;
 
   // For 1 person (stay in one place):
   // have the extra 4th person in case I forget to change
   if (numPlayers === 1) {
-    xPositions = [0.6, 0.1, 1.1, 1.1];
+    xPositions = ONE_PLAYER_X_POSITIONS;
   }
-
-  const scale = 0.5;
 
   // Use FULL 0-1 range, no padding at all
   let newXPos = 1 - xPos + xPositions[bodyIndex];
 
   skeletonMetaballs.addBall(
-    newXPos * scale,
-    (1 - yPos) * scale, // Subtracts pos from 1 to flip orientation
+    newXPos * BODY_SCALE,
+    (1 - yPos) * BODY_SCALE, // Subtracts pos from 1 to flip orientation
     0,
     strength,
     6,

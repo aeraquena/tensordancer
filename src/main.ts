@@ -5,6 +5,11 @@ import * as threeHelper from "./utils/threeHelper";
 import * as mediaPipeHelper from "./utils/mediaPipeHelper";
 import * as tfHelper from "./utils/tfHelper";
 import * as uiHelper from "./utils/uiHelper";
+import {
+  ONE_PLAYER_X_POSITIONS,
+  TWO_PLAYER_X_POSITIONS,
+  BODY_SCALE,
+} from "./utils/constants";
 import RAPIER from "@dimforge/rapier3d-compat";
 
 /***************
@@ -144,7 +149,7 @@ let currentPoses: NormalizedLandmark[][] = [];
 // AI poses
 let aiPoses: NormalizedLandmark[][] = [];
 
-let numberOfPlayers: number;
+let numberOfPlayers: number = 2;
 
 /****************
  * UI functions *
@@ -165,6 +170,13 @@ function countdownToRecord() {
   }
 }
 
+// Update the UI after number of players has changed
+function onPlayerNumberChange() {
+  updateTrainBodyButton();
+  updatePositionMarkers();
+}
+
+// Update text of train body button - between retrain, record 1 person, record 2 people
 function updateTrainBodyButton() {
   if (trainBodyButtonLabel) {
     if (mlMode === MLMode.PREDICTING) {
@@ -177,6 +189,35 @@ function updateTrainBodyButton() {
       }
     }
   }
+}
+
+// Update markers that show where AI bodies will spawn
+function updatePositionMarkers() {
+  const offset = 0.3;
+  person1Position.position.x =
+    BODY_SCALE *
+      (numberOfPlayers === 1
+        ? ONE_PLAYER_X_POSITIONS[0]
+        : TWO_PLAYER_X_POSITIONS[0]) -
+    offset;
+  person2Position.position.x =
+    BODY_SCALE *
+      (numberOfPlayers === 1
+        ? ONE_PLAYER_X_POSITIONS[1]
+        : TWO_PLAYER_X_POSITIONS[1]) -
+    offset;
+  ai1Position.position.x =
+    BODY_SCALE *
+      (numberOfPlayers === 1
+        ? ONE_PLAYER_X_POSITIONS[2]
+        : TWO_PLAYER_X_POSITIONS[2]) -
+    offset;
+  ai2Position.position.x =
+    BODY_SCALE *
+      (numberOfPlayers === 1
+        ? ONE_PLAYER_X_POSITIONS[3]
+        : TWO_PLAYER_X_POSITIONS[3]) -
+    offset;
 }
 
 /***********************************************************************
@@ -351,7 +392,7 @@ async function predictWebcam() {
       if (mlMode !== MLMode.TRAINING) {
         // Update number of players
         numberOfPlayers = result.landmarks.length;
-        updateTrainBodyButton();
+        onPlayerNumberChange();
       }
 
       // Clear current poses
@@ -593,6 +634,35 @@ gridHelper.rotation.x = Math.PI / 2;
 gridHelper.position.y = -0.125;
 
 //scene.add(gridHelper);
+
+// Markers for where AI bodies will be (debug mode)
+const person1Position = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.005, 0.005),
+  new THREE.MeshBasicMaterial({ color: 0x44aeb3 })
+);
+person1Position.position.y = -0.5;
+scene.add(person1Position);
+
+const person2Position = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.005, 0.005),
+  new THREE.MeshBasicMaterial({ color: 0xf01c9c })
+);
+person2Position.position.y = -0.5;
+scene.add(person2Position);
+
+const ai1Position = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.005, 0.005),
+  new THREE.MeshBasicMaterial({ color: 0x0000ff })
+);
+ai1Position.position.y = -0.5;
+scene.add(ai1Position);
+
+const ai2Position = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.005, 0.005),
+  new THREE.MeshBasicMaterial({ color: 0xff0000 })
+);
+ai2Position.position.y = -0.5;
+scene.add(ai2Position);
 
 // Metaballs for joints
 const skeletonMetaballs = threeHelper.createSkeletonMetaballs(RAPIER, world);
