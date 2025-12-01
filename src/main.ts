@@ -28,7 +28,7 @@ const canvasElement = document.getElementById(
 const canvasCtx = canvasElement.getContext("2d") as CanvasRenderingContext2D;
 const drawingUtils = new DrawingUtils(canvasCtx as CanvasRenderingContext2D);
 
-const countdownDuration = 3;
+const countdownDuration = 0; //3
 
 videoToggleButton = document.getElementById(
   "videoToggleButton"
@@ -127,7 +127,7 @@ const MLMode = {
 let person1Poses: number[][] = [];
 let person2Poses: number[][] = [];
 let mlMode = MLMode.IDLE;
-let trainingDuration = 10;
+let trainingDuration = 3; //10
 
 // Model of Person 2, controlled by Person 1
 let myModel: any;
@@ -460,6 +460,9 @@ async function trainModel() {
     const minLen = Math.min(person1Poses.length, person2Poses.length);
     const trainingData: tfHelper.PoseDatum[] = [];
     const trainingData2: tfHelper.PoseDatum[] = [];
+
+    console.log(trainingData);
+    console.log(trainingData2);
 
     for (let i = 0; i < minLen; i++) {
       trainingData.push({

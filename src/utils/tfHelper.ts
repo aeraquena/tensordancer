@@ -43,7 +43,7 @@ export function unflattenPose(pose: number[]): NormalizedLandmark[] {
 
 // Define model architecture
 // Updated model: 66D input → 66D output
-function createModel() {
+function createModel(timeSteps: number) {
   // Create a small MLP with a mix of linear and ReLU layers.
   // Input: single scalar (hand X). Output: single scalar (predicted mouse Y).
   const model = tf.sequential();
@@ -51,26 +51,67 @@ function createModel() {
   // Input: 66D pose (33 landmarks × 2)
   // First hidden layer: expand to a richer representation and apply non-linearity
   model.add(
-    tf.layers.dense({
-      inputShape: [66],
-      units: 128,
-      activation: "relu",
-      useBias: true,
+    tf.layers.timeDistributed({
+      layer: tf.layers.dense({
+        inputShape: [66],
+        units: 128,
+        activation: "relu",
+        useBias: true,
+      }),
+      inputShape: [timeSteps, 66],
     })
   );
 
+  // 2. Reshape Layer (Transforms 2D to 3D for LSTM)
+  // Input: [batch_size, 128] --> Output: [batch_size, 1, 128]
+  // The targetShape only includes the non-batch dimensions.
+  /*model.add(
+    tf.layers.reshape({
+      targetShape: [1, 128], // This introduces the timesteps=1 dimension
+    })
+  );*/
+
   // Add more model layers to increase accuracy
+  // Add an LSTM layer
+  // units: The dimensionality of the output space (number of LSTM units).
+  // inputShape: The shape of the input data, excluding the batch size.
+  // For an LSTM, this is typically [timesteps, features].
+  // todo: get number of actual frames
+  //model.add(tf.layers.lstm({ units: 64, inputShape: [1, timeFrames, 128] }));
+
+  // 3. LSTM Layer (Receives 3D input)
+  // Input: [batch_size, 1, 128] --> Output: [batch_size, 64] (default, returnSequences: false)
+  // NOTE: The inputShape is NOT needed here because the previous layer defines it.
+  model.add(tf.layers.lstm({ units: 64, returnSequences: true }));
+
+  /*model.add(
+    tf.layers.reshape({
+      targetShape: [64], // This removes the timesteps=1 dimension
+    })
+  );*/
 
   // Second hidden layer: narrower representation
-  model.add(tf.layers.dense({ units: 64, activation: "relu", useBias: true }));
+  model.add(
+    tf.layers.timeDistributed({
+      layer: tf.layers.dense({ units: 32, activation: "relu", useBias: true }),
+      //inputShape: [timeSteps, 64],
+    })
+  );
 
   // Third hidden layer: smaller feature set
-  model.add(tf.layers.dense({ units: 32, activation: "relu", useBias: true }));
+  // model.add(tf.layers.dense({ units: 32, activation: "relu", useBias: true }));
 
   // Final output layer: linear activation for regression
   // Output: 66D predicted pose
   model.add(
-    tf.layers.dense({ units: 66, activation: "linear", useBias: true })
+    tf.layers.timeDistributed({
+      layer: tf.layers.dense({
+        units: 66,
+        activation: "linear",
+        useBias: true,
+      }),
+      //inputShape: [timeSteps, 32],
+    })
   );
 
   return model;
@@ -93,8 +134,8 @@ function convertToTensor(data: PoseDatum[]): NormalizationData {
     const inputs = data.map((d: PoseDatum) => d.person1Pose);
     const labels = data.map((d: PoseDatum) => d.person2Pose);
 
-    const inputTensor = tf.tensor2d(inputs, [inputs.length, 66]);
-    const labelTensor = tf.tensor2d(labels, [labels.length, 66]);
+    const inputTensor = tf.tensor3d([inputs], [1, inputs.length, 66]);
+    const labelTensor = tf.tensor3d([labels], [1, labels.length, 66]);
 
     // Step 3. Normalize the data to the range 0 - 1 using min-max scaling
     const inputMax = inputTensor.max();
@@ -126,7 +167,8 @@ export async function run(
   data: PoseDatum[]
 ): Promise<{ model: any; tensorData: NormalizationData } | void> {
   // Create the model
-  const model = createModel();
+  console.log("data length: ", data.length);
+  const model = createModel(data.length);
 
   // Convert the data to a form we can use for training.
   const tensorData = convertToTensor(data);
@@ -153,7 +195,7 @@ async function trainModel(model: any, inputs: any, labels: any) {
 
   const batchSize = 32;
   const epochs = 50;
-
+  console.log(inputs);
   return await model.fit(inputs, labels, {
     batchSize,
     // size of the data subsets that the model will see on each iteration of training.
