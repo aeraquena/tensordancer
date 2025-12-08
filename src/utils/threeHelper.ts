@@ -104,7 +104,7 @@ function averageJoints(
 // Create and return skeleton metaballs
 export function createSkeletonMetaballs(RAPIER: any, world: any) {
   // Initialize bodies for joints
-  const numSkeletonBodies = 33;
+  const numSkeletonBodies = 23;
   const skeletonBodies: {
     color: THREE.Color;
     mesh:
@@ -153,11 +153,12 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
     ) {
       skeletonMetaballs.reset();
       // loop through all existing rigid bodies, get add a metaball to each
+      console.log("landmarks!");
+      console.log(landmarks);
       for (let j = 0; j < landmarks.length; j++) {
         skeletonBodies.forEach((_, i) => {
           // Skip all head landmarks, foot index, and hands
           if (
-            i > 10 &&
             i !== JOINTS.LEFT_PINKY &&
             i !== JOINTS.RIGHT_PINKY &&
             i !== JOINTS.LEFT_THUMB &&

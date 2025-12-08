@@ -3,7 +3,7 @@ import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 
 export const JOINTS = {
   NOSE: 0,
-  LEFT_EYE_INNER: 1,
+  /*  LEFT_EYE_INNER: 1,
   LEFT_EYE: 2,
   LEFT_EYE_OUTER: 3,
   RIGHT_EYE_INNER: 4,
@@ -12,32 +12,32 @@ export const JOINTS = {
   LEFT_EAR: 7,
   RIGHT_EAR: 8,
   MOUTH_LEFT: 9,
-  MOUTH_RIGHT: 10,
-  LEFT_SHOULDER: 11,
-  RIGHT_SHOULDER: 12,
-  LEFT_ELBOW: 13,
-  RIGHT_ELBOW: 14,
-  LEFT_WRIST: 15,
-  RIGHT_WRIST: 16,
-  LEFT_PINKY: 17,
-  RIGHT_PINKY: 18,
-  LEFT_INDEX: 19,
-  RIGHT_INDEX: 20,
-  LEFT_THUMB: 21,
-  RIGHT_THUMB: 22,
-  LEFT_HIP: 23,
-  RIGHT_HIP: 24,
-  LEFT_KNEE: 25,
-  RIGHT_KNEE: 26,
-  LEFT_ANKLE: 27,
-  RIGHT_ANKLE: 28,
-  LEFT_HEEL: 29,
-  RIGHT_HEEL: 30,
-  LEFT_FOOT_INDEX: 31,
-  RIGHT_FOOT_INDEX: 32,
+  MOUTH_RIGHT: 10,*/
+  LEFT_SHOULDER: 1,
+  RIGHT_SHOULDER: 2,
+  LEFT_ELBOW: 3,
+  RIGHT_ELBOW: 4,
+  LEFT_WRIST: 5,
+  RIGHT_WRIST: 6,
+  LEFT_PINKY: 7,
+  RIGHT_PINKY: 8,
+  LEFT_INDEX: 9,
+  RIGHT_INDEX: 10,
+  LEFT_THUMB: 11,
+  RIGHT_THUMB: 12,
+  LEFT_HIP: 13,
+  RIGHT_HIP: 14,
+  LEFT_KNEE: 15,
+  RIGHT_KNEE: 16,
+  LEFT_ANKLE: 17,
+  RIGHT_ANKLE: 18,
+  LEFT_HEEL: 19,
+  RIGHT_HEEL: 20,
+  LEFT_FOOT_INDEX: 21,
+  RIGHT_FOOT_INDEX: 22,
 };
 
-export const POSE_CONNECTIONS = [
+/*export const POSE_CONNECTIONS = [
   [11, 12],
   [11, 13],
   [13, 15],
@@ -64,7 +64,7 @@ export const POSE_CONNECTIONS = [
   [28, 30],
   [28, 32],
   [30, 32],
-];
+];*/
 
 // Before we can use PoseLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
@@ -89,4 +89,17 @@ export const createPoseLandmarker = async (
   });
   demosSection.classList.remove("invisible");
   return poseLandmarker;
+};
+
+// Removes joints 1-10 (face, except for nose) from list of joints
+export const removeFaceFromJoints = (
+  joints: NormalizedLandmark[]
+): NormalizedLandmark[] => {
+  let bodyJoints = [];
+  for (let i = 0; i < joints.length; i++) {
+    if (i === 0 || i > 10) {
+      bodyJoints.push(joints[i]);
+    }
+  }
+  return bodyJoints;
 };

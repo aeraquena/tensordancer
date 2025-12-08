@@ -1,10 +1,10 @@
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import * as tf from "@tensorflow/tfjs";
 
-// Store full pose data (33 landmarks × 2 coords = 66 values)
+// Store full pose data (23 landmarks × 2 coords = 46 values)
 export type PoseDatum = {
-  person1Pose: number[]; // 66D: flatten x,y for all 33 landmarks
-  person2Pose: number[]; // 66D: flatten x,y for all 33 landmarks
+  person1Pose: number[]; // 46D: flatten x,y for all 23 landmarks
+  person2Pose: number[]; // 46D: flatten x,y for all 23 landmarks
 };
 
 // Normalization / tensor metadata returned by convertToTensor
@@ -17,20 +17,24 @@ type NormalizationData = {
   labelMin: any;
 };
 
-// Helper: Flatten 33 landmarks into 66D array [x0,y0,x1,y1,...,x32,y32]
+// Helper: Flatten 33 landmarks into 46D array [x0,y0,x1,y1,...,x32,y32]
+// Remove 10 face landmarks
 export function flattenPose(landmarks: NormalizedLandmark[]): number[] {
   const pose: number[] = [];
   for (let i = 0; i < 33; i++) {
-    pose.push(landmarks[i]?.x ?? 0);
-    pose.push(landmarks[i]?.y ?? 0);
+    // Remove face
+    if (i > 0 && i <= 10) {
+      pose.push(landmarks[i]?.x ?? 0);
+      pose.push(landmarks[i]?.y ?? 0);
+    }
   }
   return pose;
 }
 
-// Helper: Unflatten 66D array into 33 NormalizedLandmarks {x: number, y: number}
+// Helper: Unflatten 46D array into 23 NormalizedLandmarks {x: number, y: number}
 export function unflattenPose(pose: number[]): NormalizedLandmark[] {
   const landmarks: NormalizedLandmark[] = [];
-  for (let i = 0; i < 33; i++) {
+  for (let i = 0; i < 23; i++) {
     landmarks.push({
       x: pose[i * 2] ?? 0,
       y: pose[i * 2 + 1] ?? 0,
@@ -42,17 +46,17 @@ export function unflattenPose(pose: number[]): NormalizedLandmark[] {
 }
 
 // Define model architecture
-// Updated model: 66D input → 66D output
+// Updated model: 46D input → 46D output
 function createModel() {
   // Create a small MLP with a mix of linear and ReLU layers.
   // Input: single scalar (hand X). Output: single scalar (predicted mouse Y).
   const model = tf.sequential();
 
-  // Input: 66D pose (33 landmarks × 2)
+  // Input: 46D pose (23 landmarks × 2)
   // First hidden layer: expand to a richer representation and apply non-linearity
   model.add(
     tf.layers.dense({
-      inputShape: [66],
+      inputShape: [46],
       units: 128,
       activation: "relu",
       useBias: true,
@@ -68,9 +72,9 @@ function createModel() {
   model.add(tf.layers.dense({ units: 32, activation: "relu", useBias: true }));
 
   // Final output layer: linear activation for regression
-  // Output: 66D predicted pose
+  // Output: 46D predicted pose
   model.add(
-    tf.layers.dense({ units: 66, activation: "linear", useBias: true })
+    tf.layers.dense({ units: 46, activation: "linear", useBias: true })
   );
 
   return model;
@@ -93,8 +97,8 @@ function convertToTensor(data: PoseDatum[]): NormalizationData {
     const inputs = data.map((d: PoseDatum) => d.person1Pose);
     const labels = data.map((d: PoseDatum) => d.person2Pose);
 
-    const inputTensor = tf.tensor2d(inputs, [inputs.length, 66]);
-    const labelTensor = tf.tensor2d(labels, [labels.length, 66]);
+    const inputTensor = tf.tensor2d(inputs, [inputs.length, 46]);
+    const labelTensor = tf.tensor2d(labels, [labels.length, 46]);
 
     // Step 3. Normalize the data to the range 0 - 1 using min-max scaling
     const inputMax = inputTensor.max();
@@ -164,18 +168,18 @@ async function trainModel(model: any, inputs: any, labels: any) {
   });
 }
 
-// Predict full 66D pose from input pose
+// Predict full 46D pose from input pose
 // Normalize a single pose, run predict, un-normalize and return array of output pose
 export function predictPose(
   model: any,
-  inputPose: number[], // 66D
+  inputPose: number[], // 46D
   normalizationData: NormalizationData
 ): number[] {
   const { inputMax, inputMin, labelMin, labelMax } = normalizationData;
 
   return tf.tidy(() => {
     // create a normalized tensor for the single input
-    const inputTensor = tf.tensor2d([inputPose], [1, 66]);
+    const inputTensor = tf.tensor2d([inputPose], [1, 46]);
     const normalized = inputTensor.sub(inputMin).div(inputMax.sub(inputMin));
     // predict (returns a Tensor)
     const pred = model.predict(normalized) as any;

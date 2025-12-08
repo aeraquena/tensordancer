@@ -123,7 +123,7 @@ const MLMode = {
  * Tensorflow declarations *
  ***************************/
 
-// Array of 66D poses per person
+// Array of 46D poses per person
 let person1Poses: number[][] = [];
 let person2Poses: number[][] = [];
 let mlMode = MLMode.IDLE;
@@ -138,8 +138,8 @@ let playbackStartTime = 0;
 let myModel2: any;
 let myNormalizations2: any;
 
-let predictedPose: number[] = []; // 66D predicted pose
-let predictedPose2: number[] = []; // 66D predicted pose
+let predictedPose: number[] = []; // 46D predicted pose
+let predictedPose2: number[] = []; // 46D predicted pose
 
 // The current pose for all humans, playback, and AI
 // TODO: We only need x, y, not z or visibility
@@ -364,15 +364,15 @@ async function predictWebcam() {
         let raisingHands = false;
         raisingHands =
           result.landmarks[0] &&
-          result.landmarks[0][mediaPipeHelper.JOINTS.RIGHT_INDEX].y <
-            result.landmarks[0][mediaPipeHelper.JOINTS.RIGHT_EYE].y;
+          result.landmarks[0][mediaPipeHelper.JOINTS.RIGHT_INDEX + 10].y <
+            result.landmarks[0][mediaPipeHelper.JOINTS.NOSE].y;
 
         if (numberOfPlayers === 2) {
           raisingHands =
             raisingHands &&
             result.landmarks[1] &&
-            result.landmarks[1][mediaPipeHelper.JOINTS.RIGHT_INDEX].y <
-              result.landmarks[1][mediaPipeHelper.JOINTS.RIGHT_EYE].y;
+            result.landmarks[1][mediaPipeHelper.JOINTS.RIGHT_INDEX + 10].y <
+              result.landmarks[1][mediaPipeHelper.JOINTS.NOSE].y;
         }
 
         if (raisingHands) {
@@ -413,7 +413,9 @@ async function predictWebcam() {
       // Drawing utils
       canvasCtx.save();
       canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      // Iterates over bodies. We have to extract indices 1-10 from each.
       for (const landmark of result.landmarks) {
+        //for (const index in result.landmarks) {
         drawingUtils.drawLandmarks(landmark as NormalizedLandmark[], {
           radius: (data: any) =>
             DrawingUtils.lerp((data.from?.z ?? 0) as number, -0.15, 0.1, 5, 1),
@@ -424,7 +426,8 @@ async function predictWebcam() {
         );
 
         // push each current body to currentPoses
-        currentPoses.push(landmark);
+        // skip 1-10 (face)
+        currentPoses.push(mediaPipeHelper.removeFaceFromJoints(landmark));
       }
 
       canvasCtx.restore();
@@ -702,11 +705,11 @@ function animate() {
       aiPoses.push(tfHelper.unflattenPose(person1Poses[frameIndex]));
     }
   } else if (mlMode === MLMode.PREDICTING) {
-    if (predictedPose.length === 66) {
+    if (predictedPose.length === 46) {
       // predicted pose 1
       aiPoses.push(tfHelper.unflattenPose(predictedPose));
     }
-    if (predictedPose2.length === 66) {
+    if (predictedPose2.length === 46) {
       // predicted pose 2
       aiPoses.push(tfHelper.unflattenPose(predictedPose2));
     }
