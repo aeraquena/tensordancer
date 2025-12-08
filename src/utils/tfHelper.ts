@@ -23,7 +23,7 @@ export function flattenPose(landmarks: NormalizedLandmark[]): number[] {
   const pose: number[] = [];
   for (let i = 0; i < 33; i++) {
     // Remove face
-    if (i > 0 && i <= 10) {
+    if (i === 0 || i > 10) {
       pose.push(landmarks[i]?.x ?? 0);
       pose.push(landmarks[i]?.y ?? 0);
     }

@@ -719,6 +719,9 @@ function animate() {
     playbackStartTime = 0;
   }
 
+  console.log("current poses: ", currentPoses);
+  console.log("ai poses: ", aiPoses);
+
   // Metaballs
   // TODO: Can "flatten" two objects of currentPoses now
   // Calls update here with current poses. Should we pass in strength here?

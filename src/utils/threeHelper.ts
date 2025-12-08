@@ -153,7 +153,7 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
     ) {
       skeletonMetaballs.reset();
       // loop through all existing rigid bodies, get add a metaball to each
-      console.log("landmarks!");
+      console.log("skeleton metaballs update: landmarks!");
       console.log(landmarks);
       for (let j = 0; j < landmarks.length; j++) {
         skeletonBodies.forEach((_, i) => {
