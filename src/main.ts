@@ -455,6 +455,9 @@ function toggleVideo() {
 }
 
 async function trainModel() {
+  console.log("person 1 poses length: ", person1Poses.length);
+  console.log("person 2 poses length: ", person2Poses.length);
+
   if (person1Poses.length > 10 && person2Poses.length > 10) {
     // Align datasets to same length
     const minLen = Math.min(person1Poses.length, person2Poses.length);
@@ -506,8 +509,8 @@ function recordBodies() {
     if (numberOfPlayers === 2) {
       mlMode = MLMode.TRAINING;
       recordingPhase = "both";
-      person1Poses = [];
-      person2Poses = [];
+      //person1Poses = []; // TODO: Don't necessarily do this
+      //person2Poses = []; // TODO: Don't necessarily do this
 
       if (trainBodyButtonLabel && trainBodyButton) {
         trainBodyButtonLabel.innerText = "RECORDING BOTH...";
@@ -530,7 +533,7 @@ function recordBodies() {
     } else {
       recordingPhase = "person1";
       mlMode = MLMode.TRAINING;
-      person1Poses = [];
+      //person1Poses = []; // TODO: Don't necessarily do this
 
       if (trainBodyButton && trainBodyButtonLabel) {
         trainBodyButtonLabel.innerText = "RECORDING PERSON 1...";
@@ -559,7 +562,7 @@ function recordBodies() {
   else if (person1Poses.length > 0 && person2Poses.length === 0) {
     recordingPhase = "person2";
     mlMode = MLMode.TRAINING;
-    person2Poses = [];
+    //person2Poses = []; // TODO: Don't necessarily do this
 
     if (trainBodyButton && trainBodyButtonLabel) {
       trainBodyButtonLabel.innerText = "RECORDING PERSON 2...";
@@ -578,13 +581,22 @@ function recordBodies() {
   }
   // Reset: Start over
   else {
+    // TODO: Keep adding to poses... in 2 phases.
+    // Can have a counter for number of times person1 has trained, etc.
+    // Keep incrementing person1, person2, person1, person2, etc.
+
+    /*
+
+    trainModel() again. Does this assume one set of training data? How long does it take?
+    */
+
     // Reset
-    person1Poses = [];
+    /*person1Poses = [];
     person2Poses = [];
     myModel = null;
     myNormalizations = null;
     myModel2 = null;
-    myNormalizations2 = null;
+    myNormalizations2 = null;*/
 
     mlMode = MLMode.IDLE;
   }
