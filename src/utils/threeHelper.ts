@@ -152,9 +152,13 @@ export function createSkeletonMetaballs(RAPIER: any, world: any) {
       numPlayers: number
     ) {
       skeletonMetaballs.reset();
+
+      // Only render AI bodies if they exist
+      /*if (landmarks.length > 2) {
+        landmarks = landmarks.slice(-2); // preserve last 2 elements
+      }*/
+
       // loop through all existing rigid bodies, get add a metaball to each
-      console.log("skeleton metaballs update: landmarks!");
-      console.log(landmarks);
       for (let j = 0; j < landmarks.length; j++) {
         skeletonBodies.forEach((_, i) => {
           // Skip all head landmarks, foot index, and hands

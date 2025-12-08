@@ -8,7 +8,7 @@ export function startCountdown(seconds: number, isRecording: boolean): void {
 
   console.log("start countdown, is recording: ", isRecording);
   if (countdownEl) {
-    countdownEl.style.color = isRecording ? "#ffffff" : "#999999";
+    countdownEl.style.color = isRecording ? "#ffffff" : "#777777";
     countdownEl.textContent = remaining.toString();
   }
 
