@@ -133,7 +133,7 @@ footer {
   top: 0;
   left: 0;
   height: 100%;
-  background-color: yellow; /* Color of the progress bar fill */
+  background-color: #32cd32; /* Color of the progress bar fill */
 }
 
 .slider {
