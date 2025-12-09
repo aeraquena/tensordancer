@@ -10,8 +10,8 @@ import {
 } from "./constants";
 
 const bodyColors: THREE.Color[] = [
-  new THREE.Color().setHex(0x44aeb3), // cyan
-  new THREE.Color().setHex(0xf01c9c), // hot pink
+  new THREE.Color().setHex(0xff8ff4), // cyan
+  new THREE.Color().setHex(0xfc5bef), // light pink
   new THREE.Color().setHex(0x0000ff), // blue
   new THREE.Color().setHex(0xff0000), // red
 ];
