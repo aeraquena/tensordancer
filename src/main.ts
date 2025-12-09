@@ -194,6 +194,7 @@ function updateTrainBodyButton() {
 
 // Update markers that show where AI bodies will spawn
 function updatePositionMarkers() {
+  console.log("update position markers!");
   const offset = 0.3;
   person1Position.position.x =
     BODY_SCALE *
