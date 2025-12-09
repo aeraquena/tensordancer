@@ -54,6 +54,7 @@ function addBallWithPositionAndSize(
 
   // For 1 person (stay in one place):
   // have the extra 4th person in case I forget to change
+  // TODO: Don't change this
   if (numPlayers === 1) {
     xPositions = ONE_PLAYER_X_POSITIONS;
   }

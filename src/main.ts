@@ -402,7 +402,7 @@ async function predictWebcam() {
         }
       }
 
-      if (mlMode !== MLMode.TRAINING) {
+      if (mlMode !== MLMode.TRAINING && mlMode !== MLMode.PREDICTING) {
         // Update number of players
         numberOfPlayers = result.landmarks.length;
         onPlayerNumberChange();
@@ -720,8 +720,8 @@ function animate() {
     playbackStartTime = 0;
   }
 
-  console.log("current poses: ", currentPoses);
-  console.log("ai poses: ", aiPoses);
+  //console.log("current poses: ", currentPoses);
+  //console.log("ai poses: ", aiPoses);
 
   // Metaballs
   // TODO: Can "flatten" two objects of currentPoses now
