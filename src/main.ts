@@ -60,7 +60,7 @@ const strengthValue: HTMLSpanElement | null = document.getElementById(
   "strength-value"
 ) as HTMLSpanElement | null;
 
-let ballStrength = 0.033; // default strength for standing
+let ballStrength = 0.027; // default strength for standing
 if (strengthSlider && strengthValue) {
   // Initializa=e
   strengthSlider.value = (ballStrength * 1000).toString();
@@ -104,8 +104,8 @@ let runningMode: "IMAGE" | "VIDEO" = "IMAGE";
 let recordingPhase: "idle" | "person1" | "person2" | "both" = "idle";
 
 let webcamRunning = false;
-const videoHeight = "360px";
-const videoWidth = "480px";
+const videoHeight = "270px";
+const videoWidth = "360px";
 
 // Create and wait for pose landmarker to finish loading
 poseLandmarker = await mediaPipeHelper.createPoseLandmarker(
